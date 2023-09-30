@@ -1,0 +1,2 @@
+# Reclassify Windows Script Component files as Classic ASP
+*.wsc linguist-language=asp
