@@ -1,0 +1,223 @@
+<?xml version="1.0"?>
+<component>
+
+<?component error="true" debug="true"?>
+
+<registration
+	description="ASP Morse Code Library"
+	progid="ASPMorseCodeLibrary.WSC"
+	version="1.00"
+	classid="{b7ff37dd-4f0c-419b-b908-8691f7ecef65}"
+>
+</registration>
+
+<public>
+	<method name="encodeMessage">
+		<PARAMETER name="message"/>
+	</method>
+	<method name="decodeMessage">
+		<PARAMETER name="message"/>
+	</method>
+</public>
+
+<implements type="ASP" id="ASP"/>
+
+<script language="VBScript">
+<![CDATA[
+		' ASP Morse Code Library
+		' 
+		' Copyright (c) 2023, Scott Vander Molen; some rights reserved.
+		' 
+		' This work is licensed under a Creative Commons Attribution 4.0 International License.
+		' To view a copy of this license, visit https://creativecommons.org/licenses/by/4.0/
+		' 
+		' @author  Scott Vander Molen
+		' @version 2.0
+		' @since   2023-09-22
+		
+		Response.CodePage = 65001 
+		Response.CharSet = "UTF-8"
+		
+		const errorProsign = "········"
+		
+		dim morse
+		set morse = Server.CreateObject("Scripting.Dictionary")
+		
+		with morse
+			.Add " ", "/"
+			.Add "A", "·–"
+			.Add "B", "–···"
+			.Add "C", "–·–·"
+			.Add "D", "–··"
+			.Add "E", "·"
+			.Add "F", "··–·"
+			.Add "G", "––·"
+			.Add "H", "····"
+			.Add "I", "··"
+			.Add "J", "·–––"
+			.Add "K", "–·–"
+			.Add "L", "·–··"
+			.Add "M", "––"
+			.Add "N", "–·"
+			.Add "O", "–––"
+			.Add "P", "·––·"
+			.Add "Q", "––·–"
+			.Add "R", "·–·"
+			.Add "S", "···"
+			.Add "T", "–"
+			.Add "U", "··–"
+			.Add "V", "···–"
+			.Add "W", "·––"
+			.Add "X", "–··–"
+			.Add "Y", "–·––"
+			.Add "Z", "––··"
+			.Add "0", "–––––"
+			.Add "1", "·––––"
+			.Add "2", "··–––"
+			.Add "3", "···––"
+			.Add "4", "····–"
+			.Add "5", "·····"
+			.Add "6", "–····"
+			.Add "7", "––···"
+			.Add "8", "–––··"
+			.Add "9", "––––·"
+			.Add "·", "·–·–·–"
+			.Add ",", "––··––"
+			.Add "?", "··––··"
+			.Add "'", "·––––·"
+			.Add "!", "–·–·––"
+			.Add "/", "–··–·"
+			.Add "(", "–·––·"
+			.Add ")", "–·––·–"
+			.Add "&", "·–···"
+			.Add ":", "–––···"
+			.Add ";", "–·–·–·"
+			.Add "=", "–···–"
+			.Add "+", "·–·–·"
+			.Add "–", "–····–"
+			.Add "_", "··––·–"
+			.Add """", "·–··–·"
+			.Add "$", "···–··–"
+			.Add "@", "·––·–·"
+		end with
+
+		' Since ASP doesn't support checking if a value exists, the fastest solution is to create a second dictionary with the keys and values reversed.
+		dim reverseMorse
+		set reverseMorse = Server.CreateObject("Scripting.Dictionary")
+
+		with reverseMorse
+			.Add "/", " "
+			.Add "·–", "A"
+			.Add "–···", "B"
+			.Add "–·–·", "C"
+			.Add "–··", "D"
+			.Add "·", "E"
+			.Add "··–·", "F"
+			.Add "––·", "G"
+			.Add "····", "H"
+			.Add "··", "I"
+			.Add "·–––", "J"
+			.Add "–·–", "K"
+			.Add "·–··", "L"
+			.Add "––", "M"
+			.Add "–·", "N"
+			.Add "–––", "O"
+			.Add "·––·", "P"
+			.Add "––·–", "Q"
+			.Add "·–·", "R"
+			.Add "···", "S"
+			.Add "–", "T"
+			.Add "··–", "U"
+			.Add "···–", "V"
+			.Add "·––", "W"
+			.Add "–··–", "X"
+			.Add "–·––", "Y"
+			.Add "––··", "Z"
+			.Add "–––––", "0"
+			.Add "·––––", "1"
+			.Add "··–––", "2"
+			.Add "···––", "3"
+			.Add "····–", "4"
+			.Add "·····", "5"
+			.Add "–····", "6"
+			.Add "––···", "7"
+			.Add "–––··", "8"
+			.Add "––––·", "9"
+			.Add "·–·–·–", "·"
+			.Add "––··––", ","
+			.Add "··––··", "?"
+			.Add "·––––·", "'"
+			.Add "–·–·––", "!"
+			.Add "–··–·", "/"
+			.Add "–·––·", "("
+			.Add "–·––·–", ")"
+			.Add "·–···", "&"
+			.Add "–––···", ":"
+			.Add "–·–·–·", ";"
+			.Add "–···–", "="
+			.Add "·–·–·", "+"
+			.Add "–····–", "–"
+			.Add "··––·–", "_"
+			.Add "·–··–·", """"
+			.Add "···–··–", "$"
+			.Add "·––·–·", "@"
+		end with
+
+		' Encodes a plain text message into morse code.
+		' 
+		' @param message The plain text message to encode.
+		' @return string The morse-encoded message. Words are separated by forward slashes.
+		function encodeMessage(message)
+			dim result
+			result = ""
+			
+			dim charCounter
+			dim character
+			
+			' Loop through the message one character at a time.
+			for charCounter = 1 to len(message)
+				character = ucase(mid(message, charCounter, 1))
+				
+				' Check if the character exists in the dictionary.
+				if morse.exists(character) then
+					' The character exists, so return the equivalent morse code.
+					result = result & morse.item(character) & " "
+				else
+					' The character doesn't exist, so return the error prosign.
+					result = result & errorProsign & " "
+				end if
+			next
+			
+			encodeMessage = trim(result)
+		end function
+
+		' Decodes a morse-encoded message into plain text.
+		' 
+		' @param message The morse-encoded message to decode.
+		' @return string The decoded plain text message.
+		function decodeMessage(message)
+			dim result
+			result = ""
+			
+			' Split the message into separate characters.
+			dim code
+			dim codes
+			codes = split(message, " ")
+			
+			' Loop through the message one character at a time.
+			for each code in codes
+				if reverseMorse.exists(code) then
+					' The code exists, so return the equivalent character.
+					result = result & reverseMorse.Item(code)
+				else
+					' The code doesn't exist, so return an error symbol.
+					result = result & "� "
+				end if
+			next
+			
+			decodeMessage = trim(result)
+		end function
+]]>
+</script>
+
+</component>
