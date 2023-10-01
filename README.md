@@ -30,13 +30,13 @@ The file morse.test.asp is not required in order to use the library and does not
 // Change the path if you're storing the library in a different folder.
 include 'morse.lib.php';
 
-// Feel free to alias the namespace if you don't want to write my name every time you call one of my functions. ðŸ˜‰
+// Feel free to alias the namespace if you don't want to write my name every time you call one of my functions. é¦ƒæ§ˆ
 use ScottVM\Morse as Morse;
 
 // The string we want to encode.
 $plainText = "Hello world!";
 
-// Returns '¡¤¡¤¡¤¡¤ ¡¤ ¡¤¨C¡¤¡¤ ¡¤¨C¡¤¡¤ ¨C¨C¨C / ¡¤¨C¨C ¨C¨C¨C ¡¤¨C¡¤ ¡¤¨C¡¤¡¤ ¨C¡¤¡¤ ¨C¡¤¨C¡¤¨C¨C'
+// Returns 'Â·Â·Â·Â· Â· Â·â€“Â·Â· Â·â€“Â·Â· â€“â€“â€“ / Â·â€“â€“ â€“â€“â€“ Â·â€“Â· Â·â€“Â·Â· â€“Â·Â· â€“Â·â€“Â·â€“â€“'
 $secretMessage = Morse\encodeMessage($plainText);
 
 // Returns the original plain text message.
@@ -45,7 +45,7 @@ $revealedMessage = Morse\decodeMessage($secretMessage);
 
 ### ASP Classic
 
-```ASP
+```vbscript
 dim Morse
 
 ' Option 1: component not registered
@@ -62,7 +62,7 @@ set Morse = GetObject("script:c:\inetpub\wwwroot\morse.lib.wsc")
 dim plainText
 plainText = "Hello world!"
 
-' Returns '¡¤¡¤¡¤¡¤ ¡¤ ¡¤¨C¡¤¡¤ ¡¤¨C¡¤¡¤ ¨C¨C¨C / ¡¤¨C¨C ¨C¨C¨C ¡¤¨C¡¤ ¡¤¨C¡¤¡¤ ¨C¡¤¡¤ ¨C¡¤¨C¡¤¨C¨C'
+' Returns 'Â·Â·Â·Â· Â· Â·â€“Â·Â· Â·â€“Â·Â· â€“â€“â€“ / Â·â€“â€“ â€“â€“â€“ Â·â€“Â· Â·â€“Â·Â· â€“Â·Â· â€“Â·â€“Â·â€“â€“'
 dim secretMessage
 secretMessage = Morse.encodeMessage(plainText)
 
