@@ -109,4 +109,6 @@
 	' Close the HTML container.
 	Response.Write "</body>" & vbCrLf
 	Response.Write "</html>"
+	
+	set Morse = nothing
 %>
