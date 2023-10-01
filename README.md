@@ -45,7 +45,7 @@ $revealedMessage = Morse\decodeMessage($secretMessage);
 
 ### ASP Classic
 
-```vbscript
+```VBScript
 dim Morse
 
 ' Option 1: component not registered
