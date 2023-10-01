@@ -5,7 +5,7 @@
 
 <registration
 	description="ASP Morse Code Library"
-	progid="ASPMorseCodeLibrary.WSC"
+	progid="ScottVM.Morse"
 	version="1.00"
 	classid="{b7ff37dd-4f0c-419b-b908-8691f7ecef65}"
 >
